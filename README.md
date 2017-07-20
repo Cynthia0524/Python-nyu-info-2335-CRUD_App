@@ -27,6 +27,7 @@
 
 ## Prerequisite
 python3 installed
+
 csv file saving product list
 
 ## Installation
@@ -44,7 +45,7 @@ Or if you like, you could have your own csv file in the data folder, which shoul
 
 ## Usage
 
-### Go to the required folder in Terminal (Mac)
+### Go to the required folder in Mac Terminal
 ```shell
 cd some/path/to/Python-nyu-info-2335-CRUD_App
 ```
