@@ -1,8 +1,8 @@
 import csv
 
-username = input("Please input your username: ")
-
-products_path = "/Users/cynthia/Desktop/Github/Python-nyu-info-2335-CRUD_App/data/products.csv"
+#Read the original product list
+products_path = "data/products.csv"
+#products_path = "/Users/cynthia/Desktop/Github/Python-nyu-info-2335-CRUD_App/data/products.csv"
 products = []
 keys = ["id","name","aisle","department","price"]
 with open(products_path, "r") as products_file:
@@ -12,18 +12,11 @@ with open(products_path, "r") as products_file:
         for key in keys:
             dic[key] = row[key]
         products.append(dic)
-#        products.append({"id":row["id"],"name":row["name"],"aisle":row["aisle"],"department":row["department"],"price":row["price"]})
 
+#Define some useful functions
 def look_up_id(id):
     match = [product for product in products if product["id"] == id]
     return match[0]
-
-#print("-------------------------------")
-#print("PRODUCTS APPLICATION")
-#print("-------------------------------")
-print("\n" + "-------------------------------" + "\n" + "PRODUCTS APPLICATION" + "\n" + "-------------------------------")
-print("Welcome @" + username + "!")
-print("\n")
 
 def operation_guide():
     print("\n")
@@ -38,10 +31,40 @@ def operation_guide():
     print("    'Destroy' | Delete an existing product.")
     print("\n")
 
+def after_operation():
+    choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation\n")
+    if choice == "Yes":
+        operation_guide()
+        operation = input(" ")
+    elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
+    else: operation = "Exit"
+    return operation
+
+def greatest_id(products):
+    ids = []
+    for product in products:
+        ids.append(int(product["id"]))
+    return max(ids)
+
+def valid_id(id):
+    ids = []
+    for product in products:
+        ids.append(product["id"])
+    while(id not in ids):
+        id = input("Wrong identifier! Please try again: ")
+    return id
+
+#Welcome page
+username = input("Please input your username: ")
+print("\n" + "-------------------------------" + "\n" + "PRODUCTS APPLICATION" + "\n" + "-------------------------------")
+print("Welcome @" + username + "!")
+print("\n")
 operation_guide()
 
+#Input user's operation
 operation = input(" ")
 
+#Start the operation processes
 while True:
 
     if operation == "List":
@@ -49,39 +72,20 @@ while True:
         for product in products:
             print("  + " + str(product))
 
-        choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation choice: ")
-        if choice == "Yes":
-            operation_guide()
-            operation = input(" ")
-        elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-        else: operation = "Exit"
+        operation = after_operation()
 
 
     elif operation == "Show":
         show_id = input("OK. Please specify the product's identifier: ")
-        ids = []
-        for product in products:
-            ids.append(product["id"])
-        while(show_id not in ids):
-            show_id = input("Wrong identifier! Please try again: ")
+        show_id = valid_id(show_id)
         print("SHOWING A PRODUCT HERE!")
         print(str(look_up_id(show_id)))
 
-        choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation choice: ")
-        if choice == "Yes":
-            operation_guide()
-            operation = input(" ")
-        elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-        else: operation = "Exit"
+        operation = after_operation()
 
 
     elif operation == "Create":
         print("OK. Please specify the product's information...")
-        def greatest_id(products):
-            ids = []
-            for product in products:
-                ids.append(int(product["id"]))
-            return max(ids)
         new_product = dict.fromkeys(keys)
         new_product["id"] = str(greatest_id(products)+1)
         for key in keys[1:]:
@@ -90,28 +94,14 @@ while True:
         print(new_product)
         print("\n")
         products.append(new_product)
-#        with open(products_path, "a", newline='') as products_file:
-#            writer = csv.DictWriter(products_file,fieldnames = keys)
-#            new_row = csv.writer(products_file)
-#            new_row.writerow("")
-#            writer.writerow(new_product)
 
-        choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation choice: ")
-        if choice == "Yes":
-            operation_guide()
-            operation = input(" ")
-        elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-        else: operation = "Exit"
+        operation = after_operation()
 
 
     elif operation == "Update":
         update_product = dict.fromkeys(keys)
         update_product["id"] = input("OK. Please specify the product's identifier: ")
-        ids = []
-        for product in products:
-            ids.append(product["id"])
-        while(update_product["id"] not in ids):
-            update_product["id"] = input("Wrong identifier! Please try again: ")
+        update_product["id"] = valid_id(update_product["id"])
         print("OK. Please specify the product's information...")
         for key in keys[1:]:
             update_product[key] = input("    Change "+key+" from "+"'"+look_up_id(update_product["id"])[key]+"'"+" to: ")
@@ -122,21 +112,12 @@ while True:
                 index = products.index(product)
                 products[index] = update_product
 
-        choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation choice: ")
-        if choice == "Yes":
-            operation_guide()
-            operation = input(" ")
-        elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-        else: operation = "Exit"
+        operation = after_operation()
 
 
     elif operation == "Destroy":
         destroy_id = input("OK. Please specify the product's identifier: ")
-        ids = []
-        for product in products:
-            ids.append(product["id"])
-        while(destroy_id not in ids):
-            destroy_id = input("Wrong identifier! Please try again: ")
+        destroy_id = valid_id(destroy_id)
         print("DESTROYING A PRODUCT HERE!")
         print(look_up_id(destroy_id))
         for product in products:
@@ -144,12 +125,7 @@ while True:
                 index = products.index(product)
                 del products[index]
 
-        choice = input("\nDo you want to continue?\n'Yes' for guide\n'No' for exit\nOr directly input your operation choice: ")
-        if choice == "Yes":
-            operation_guide()
-            operation = input(" ")
-        elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-        else: operation = "Exit"
+        operation = after_operation()
 
 
     elif operation == "Exit":
@@ -164,3 +140,13 @@ while True:
     else:
         operation = input("Wrong input! Please try again: ")
         print("\n")
+
+
+
+#This is another way of adding a new row directly to the .csv file
+
+#with open(products_path, "a", newline='') as products_file:
+#    writer = csv.DictWriter(products_file,fieldnames = keys)
+#    new_row = csv.writer(products_file)
+#    new_row.writerow("")
+#    writer.writerow(new_product)
