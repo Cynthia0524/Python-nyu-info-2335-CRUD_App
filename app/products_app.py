@@ -37,7 +37,8 @@ def after_operation():
         operation_guide()
         operation = input(" ")
     elif choice in ["List","Show","Create","Update","Destroy"]: operation = choice
-    else: operation = "Exit"
+    elif choice == "No": operation = "Exit"
+    else: operation = choice
     return operation
 
 def greatest_id(products):
@@ -90,6 +91,9 @@ while True:
         new_product["id"] = str(greatest_id(products)+1)
         for key in keys[1:]:
             new_product[key] = input("    "+key+": ")
+        #if len(float(new_product["price"]))
+        while(len(new_product["price"].split(".")[-1]) > 2):
+        		new_product["price"] = input("Please input a price formatted as a number with two decimal places: ")
         print("CREATING A PRODUCT HERE!")
         print(new_product)
         print("\n")
@@ -105,6 +109,8 @@ while True:
         print("OK. Please specify the product's information...")
         for key in keys[1:]:
             update_product[key] = input("    Change "+key+" from "+"'"+look_up_id(update_product["id"])[key]+"'"+" to: ")
+        while(len(update_product["price"].split(".")[-1]) > 2):
+        		update_product["price"] = input("Please input a price formatted as a number with two decimal places: ")
         print("UPDATING A PRODUCT HERE!")
         print(update_product)
         for product in products:
@@ -128,25 +134,17 @@ while True:
         operation = after_operation()
 
 
-    elif operation == "Exit":
-        with open(products_path, "w") as products_file:
-            writer = csv.DictWriter(products_file, fieldnames=["id", "name", "aisle", "department", "price"])
-            writer.writeheader() # uses fieldnames set above
-            for i in products:
-                writer.writerow(i)
-        break
-
+    elif operation in ["Exit","No"]:
+    		save = input("Do you want to save the changes? Yes or No: ")
+    		if save == "Yes":
+        		with open(products_path, "w") as products_file:
+        				writer = csv.DictWriter(products_file, fieldnames=keys)
+        				writer.writeheader() # uses fieldnames set above
+        				for i in products:
+        						writer.writerow(i)
+        				break
+    		elif save == "No": break
 
     else:
         operation = input("Wrong input! Please try again: ")
         print("\n")
-
-
-
-#This is another way of adding a new row directly to the .csv file
-
-#with open(products_path, "a", newline='') as products_file:
-#    writer = csv.DictWriter(products_file,fieldnames = keys)
-#    new_row = csv.writer(products_file)
-#    new_row.writerow("")
-#    writer.writerow(new_product)
